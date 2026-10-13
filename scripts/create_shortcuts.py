@@ -5,16 +5,9 @@ import win32com.client
 def create_shortcuts():
     project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     icon_path = os.path.join(project_dir, 'assets', 'icon.ico')
+    vbs_path = os.path.join(project_dir, 'launch_app.vbs')
+    wscript_path = r'C:\Windows\System32\wscript.exe'
 
-    # Antigravity IDE executable & profile
-    antigravity_exe = r'C:\Users\netse\AppData\Local\Programs\Antigravity IDE\Antigravity IDE.exe'
-    profile_dir = r'C:\Google antigravity paulnteddy'
-    workspace_dir = project_dir
-
-    # Arguments: Open workspace with the active user profile
-    args = f'--user-data-dir="{profile_dir}" "{workspace_dir}"'
-
-    # Desktop locations
     desktop_candidates = [
         r'C:\Users\netse\OneDrive\바탕 화면',
         os.path.join(os.environ.get('USERPROFILE', ''), 'Desktop'),
@@ -25,8 +18,7 @@ def create_shortcuts():
         if d and os.path.exists(d) and d not in desktop_dirs:
             desktop_dirs.append(d)
 
-    print(f"Target Executable: {antigravity_exe} (exists: {os.path.exists(antigravity_exe)})")
-    print(f"Arguments: {args}")
+    print(f"Target Launcher: {vbs_path} (exists: {os.path.exists(vbs_path)})")
     print(f"Icon: {icon_path} (exists: {os.path.exists(icon_path)})")
 
     shell = win32com.client.Dispatch('WScript.Shell')
@@ -40,9 +32,9 @@ def create_shortcuts():
         for name in shortcut_names:
             lnk_path = os.path.join(desktop, name)
             shortcut = shell.CreateShortcut(lnk_path)
-            shortcut.TargetPath = antigravity_exe
-            shortcut.Arguments = args
-            shortcut.WorkingDirectory = workspace_dir
+            shortcut.TargetPath = wscript_path
+            shortcut.Arguments = f'"{vbs_path}"'
+            shortcut.WorkingDirectory = project_dir
             shortcut.IconLocation = f"{icon_path},0"
             shortcut.Description = "Connect AI — AI 1인 기업 · 나만의 에이전트 팀 · 제2의 두뇌"
             shortcut.Save()

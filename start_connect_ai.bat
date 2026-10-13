@@ -1,11 +1,19 @@
 @echo off
 chcp 65001 > nul
-title Connect AI — AI 1인 기업 · 나만의 에이전트 팀 실행기
-cd /d "%~dp0"
+set "HTML_PATH=file:///D:/Project_Act/97.Connect AI Lab/assets/webview/dashboard_app.html"
 
-echo ========================================================
-echo   Connect AI — AI 1인 기업 · 나만의 에이전트 팀 실행 중...
-echo ========================================================
+rem 1. Check Chrome
+if exist "C:\Program Files\Google\Chrome\Application\chrome.exe" (
+    start "" "C:\Program Files\Google\Chrome\Application\chrome.exe" --app="%HTML_PATH%" --window-size=1200,860
+    exit /b 0
+)
 
-start "" "C:\Users\netse\AppData\Local\Programs\Antigravity IDE\Antigravity IDE.exe" --user-data-dir="C:\Google antigravity paulnteddy" "%~dp0"
+rem 2. Check Edge
+if exist "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" (
+    start "" "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" --app="%HTML_PATH%" --window-size=1200,860
+    exit /b 0
+)
+
+rem 3. Fallback to default browser
+start "" "D:\Project_Act\97.Connect AI Lab\assets\webview\dashboard_app.html"
 exit /b 0
