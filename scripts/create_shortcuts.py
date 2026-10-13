@@ -3,11 +3,16 @@ import ctypes
 import win32com.client
 
 def create_shortcuts():
-    # 1. Paths
     project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     icon_path = os.path.join(project_dir, 'assets', 'icon.ico')
-    exe_path = r'C:\Users\netse\AppData\Local\Programs\Connect AI\Connect AI.exe'
-    work_dir = r'C:\Users\netse\AppData\Local\Programs\Connect AI'
+
+    # Antigravity IDE executable & profile
+    antigravity_exe = r'C:\Users\netse\AppData\Local\Programs\Antigravity IDE\Antigravity IDE.exe'
+    profile_dir = r'C:\Google antigravity paulnteddy'
+    workspace_dir = project_dir
+
+    # Arguments: Open workspace with the active user profile
+    args = f'--user-data-dir="{profile_dir}" "{workspace_dir}"'
 
     # Desktop locations
     desktop_candidates = [
@@ -20,16 +25,13 @@ def create_shortcuts():
         if d and os.path.exists(d) and d not in desktop_dirs:
             desktop_dirs.append(d)
 
-    print(f"Target Executable: {exe_path} (exists: {os.path.exists(exe_path)})")
-    print(f"Icon File: {icon_path} (exists: {os.path.exists(icon_path)})")
-    print(f"Detected Desktop Directories: {desktop_dirs}")
+    print(f"Target Executable: {antigravity_exe} (exists: {os.path.exists(antigravity_exe)})")
+    print(f"Arguments: {args}")
+    print(f"Icon: {icon_path} (exists: {os.path.exists(icon_path)})")
 
     shell = win32com.client.Dispatch('WScript.Shell')
 
-    shortcuts_created = []
-
     for desktop in desktop_dirs:
-        # Shortcut 1: Primary Project Shortcut (Standard naming convention: 97.Connect AI Lab)
         shortcut_names = [
             '97.Connect AI Lab (AI 1인 기업 · 에이전트 팀).lnk',
             'Connect AI.lnk'
@@ -38,15 +40,15 @@ def create_shortcuts():
         for name in shortcut_names:
             lnk_path = os.path.join(desktop, name)
             shortcut = shell.CreateShortcut(lnk_path)
-            shortcut.TargetPath = exe_path
-            shortcut.WorkingDirectory = work_dir
+            shortcut.TargetPath = antigravity_exe
+            shortcut.Arguments = args
+            shortcut.WorkingDirectory = workspace_dir
             shortcut.IconLocation = f"{icon_path},0"
             shortcut.Description = "Connect AI — AI 1인 기업 · 나만의 에이전트 팀 · 제2의 두뇌"
             shortcut.Save()
-            shortcuts_created.append(lnk_path)
-            print(f"Created / Updated shortcut: {lnk_path}")
+            print(f"Updated shortcut: {lnk_path}")
 
-    # 2. Refresh Windows Shell Icon Cache
+    # Refresh Windows Shell Icon Cache
     try:
         SHCNE_ASSOCCHANGED = 0x08000000
         SHCNF_IDLIST = 0x0000
@@ -54,8 +56,6 @@ def create_shortcuts():
         print("Windows Shell icon cache refreshed successfully.")
     except Exception as e:
         print(f"Warning: Failed to refresh shell cache: {e}")
-
-    return shortcuts_created
 
 if __name__ == '__main__':
     create_shortcuts()
